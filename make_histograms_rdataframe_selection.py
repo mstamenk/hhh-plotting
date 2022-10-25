@@ -7,6 +7,7 @@ from array import array
 import argparse
 parser = argparse.ArgumentParser(description='Args')
 parser.add_argument('--version', default='v17-6jets-BDT')
+parser.add_argument('--year', default='2017')
 parser.add_argument('--region', default = 'inclusive')
 parser.add_argument('--tag', default = '6tag')
 parser.add_argument('--wp', default = 'loose')
@@ -90,13 +91,24 @@ f_in = args.f_in
 
 df = ROOT.ROOT.RDataFrame('Events', path+'/' + f_in + '.root')
 
-lumi = 41480.0
+luminosities = {'2016' : 36330.0,
+                '2017' : 41480.0,
+                '2018' : 59830.0,
+        }
+
+lumi = luminosities[args.year]
+
+hlt_paths = {'2016' : '(HLT_QuadJet45_TripleBTagCSV || HLT DoubleJet90_Double30_TripleBTagCSV || HLT_AK8DiPFJet280_200_TrimMass30_BTagCSV_p20 || HLT_AK8PFHT600_TrimR0p1PT0p03Mass50_BTagCSV_p20 || HLT_AK8DiPFJet250_200_TrimMass30_BTagCSV_p20 || HLT_AK8PFJet360_TrimMass30 || HLT_AK8PFJet450 || HLT_PFJet450)', 
+             '2017' : '(HLT_PFJet450 || HLT_PFJet500 || HLT_PFHT1050 || HLT_AK8PFJet550 || HLT_AK8PFJet360_TrimMass30 || HLT_AK8PFJet380_TrimMass30 || HLT_AK8PFJet400_TrimMass30 || HLT_AK8PFHT800_TrimMass50 || HLT_AK8PFHT750_TrimMass50 || HLT_AK8PFJet330_PFAK8BTagCSV_p17 || HLT_PFHT300PT30_QuadPFJet_75_60_45_40_TriplePFBTagCSV_3p0)',
+             '2018' : '(HLT_PFHT330PT30_QuadPFJet_75_60_45_40_TriplePFBTagDeepCSV || HLT_PFHT1050 || HLT_PFJet500 || HLT_AK8PFJet500 || HLT_AK8PFJet400_TrimMass30 || HLT_AK8PFHT800_TrimMass50 || HLT_AK8PFJet330_TrimMass30_PFAK8BoostedDoubleB_np4)',
+        }
+
 
 
 wp = args.wp
 tag = args.tag
 region = args.region
-typename = 'v17-6jets-BDT'
+typename = 'v19-6jets-BDT-BTAG'
 
 out_path = '/isilon/data/users/mstamenk/hhh-6b-producer/CMSSW_11_1_0_pre5_PY3/src/plottting/histo-root-%s-%s-%s-%s-wp-%s'%(typename,version,region,wp,tag)
 if not os.path.isdir(out_path):
@@ -136,7 +148,8 @@ if 'JetHT' in f_in:
 else:
     cutWeight = '(%f * weight * xsecWeight * l1PreFiringWeight * puWeight * genWeight)'%(lumi)
 
-cutHLT = "(HLT_PFJet450 || HLT_PFJet500 || HLT_PFHT1050 || HLT_AK8PFJet550 || HLT_AK8PFJet360_TrimMass30 || HLT_AK8PFJet380_TrimMass30 || HLT_AK8PFJet400_TrimMass30 || HLT_AK8PFHT800_TrimMass50 || HLT_AK8PFHT750_TrimMass50 || HLT_AK8PFJet330_PFAK8BTagCSV_p17 || HLT_PFHT300PT30_QuadPFJet_75_60_45_40_TriplePFBTagCSV_3p0)"
+#cutHLT = "(HLT_PFJet450 || HLT_PFJet500 || HLT_PFHT1050 || HLT_AK8PFJet550 || HLT_AK8PFJet360_TrimMass30 || HLT_AK8PFJet380_TrimMass30 || HLT_AK8PFJet400_TrimMass30 || HLT_AK8PFHT800_TrimMass50 || HLT_AK8PFHT750_TrimMass50 || HLT_AK8PFJet330_PFAK8BTagCSV_p17 || HLT_PFHT300PT30_QuadPFJet_75_60_45_40_TriplePFBTagCSV_3p0)"
+cutHLT = hlt_paths[args.year]
 #cutHLT = "(HLT_PFJet500 || HLT_PFHT1050 || HLT_AK8PFJet550 || HLT_AK8PFJet360_TrimMass30 || HLT_AK8PFJet380_TrimMass30 || HLT_AK8PFJet400_TrimMass30 || HLT_AK8PFHT800_TrimMass50 || HLT_AK8PFHT750_TrimMass50 || HLT_AK8PFJet330_PFAK8BTagCSV_p17 || HLT_PFHT300PT30_QuadPFJet_75_60_45_40_TriplePFBTagCSV_3p0)"
 #cutHLT = "(HLT_PFJet500 || HLT_PFHT1050 || HLT_AK8PFJet550 )"
 #cutHLT = "(HLT_PFJet500)"
