@@ -21,6 +21,11 @@ parser.add_argument('--doHistograms', action = 'store_true') # store histograms
 
 args = parser.parse_args()
 
+if not args.outputs_path:
+    print("Exitting script: error")
+    print("Please provide output path --outputs_path /path/to/store/outputs/")
+    exit()
+
 # set batch to speed up the run
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 ROOT.ROOT.EnableImplicitMT()
@@ -28,7 +33,7 @@ ROOT.ROOT.EnableImplicitMT()
 
 # get inputs 
 version = args.version
-path = args.inputs_path + '/' + 'samples-%s-%s-nanoaod'%(version,args.year) + '/'
+path = args.inputs_path + '/' + '%s-%s'%(version,args.year) + '/'
 f_in = args.f_in
 
 # data frame with all the events 
