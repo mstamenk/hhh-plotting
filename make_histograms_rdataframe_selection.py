@@ -11,11 +11,11 @@ parser = argparse.ArgumentParser(description='Args')
 parser.add_argument('--version', default='v21') # version of NanoNN production
 parser.add_argument('--year', default='2017') # year
 parser.add_argument('--region', default = 'inclusive') # region: nFJ0, nFJ1, nFJ2, inclsuive, nFJ1p(= 1+2+3 fatjets)
-parser.add_argument('--tag', default = '6tag') # n b-tags on AK4 jets using DeepJet
+parser.add_argument('--tag', default = '0ptag') # n b-tags on AK4 jets using DeepJet
 parser.add_argument('--wp', default = 'loose') # b-tagging working point: loose, medium, tight
 parser.add_argument('--f_in', default = 'GluGluToHHHTo6B_SM') # input samples
-parser.add_argument('--inputs_path', default = '/isilon/data/users/mstamenk/eos-triple-h/') # path of inputs after NanoNN
-parser.add_argument('--outputs_path', default = '/isilon/data/users/mstamenk/eos-triple-h/') # output path for histograms and mva inputs
+parser.add_argument('--inputs_path', default = '/afs/cern.ch/work/m/mstamenk/public/forPKU/') # path of inputs after NanoNN
+parser.add_argument('--outputs_path', help='Please specify output path for histograms / mva inputs location to be stored') # output path for histograms and mva inputs
 parser.add_argument('--doMVAInputs', action = 'store_true') # store MVA inputs
 parser.add_argument('--doHistograms', action = 'store_true') # store histograms
 
