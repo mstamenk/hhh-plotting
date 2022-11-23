@@ -1,5 +1,20 @@
 # Script to store labels and cut definitions
 
+
+luminosities = {'2016' : 36330.0,
+                '2017' : 41480.0,
+                '2018' : 59830.0,
+        }
+
+
+hlt_paths = {'2016' : '(HLT_QuadJet45_TripleBTagCSV || HLT DoubleJet90_Double30_TripleBTagCSV || HLT_AK8DiPFJet280_200_TrimMass30_BTagCSV_p20 || HLT_AK8PFHT600_TrimR0p1PT0p03Mass50_BTagCSV_p20 || HLT_AK8DiPFJet250_200_TrimMass30_BTagCSV_p20 || HLT_AK8PFJet360_TrimMass30 || HLT_AK8PFJet450 || HLT_PFJet450)', 
+             '2017' : '(HLT_PFJet500 || HLT_PFHT1050 || HLT_AK8PFJet550 || HLT_AK8PFJet360_TrimMass30 || HLT_AK8PFJet400_TrimMass30 || HLT_AK8PFHT750_TrimMass50 || HLT_AK8PFJet330_PFAK8BTagCSV_p17 || HLT_PFHT300PT30_QuadPFJet_75_60_45_40_TriplePFBTagCSV_3p0 || HLT_PFMET100_PFMHT100_IDTight_CaloBTagCSV_3p1 || HLT_PFHT380_SixPFJet32_DoublePFBTagCSV_2p2 || HLT_PFHT380_SixPFJet32_DoublePFBTagDeepCSV_2p2 || HLT_PFHT430_SixPFJet40_PFBTagCSV_1p5 || HLT_QuadPFJet98_83_71_15_DoubleBTagCSV_p013_p08_VBF1 || HLT_QuadPFJet98_83_71_15_BTagCSV_p013_VBF2 )',
+             '2018' : '(HLT_PFHT330PT30_QuadPFJet_75_60_45_40_TriplePFBTagDeepCSV || HLT_PFHT1050 || HLT_PFJet500 || HLT_AK8PFJet500 || HLT_AK8PFJet400_TrimMass30 || HLT_AK8PFHT800_TrimMass50 || HLT_AK8PFJet330_TrimMass30_PFAK8BoostedDoubleB_np4)',
+        }
+
+
+
+
 labels = {
           #'h1_mass' : 'm(H1)', 
           #'h2_mass' : 'm(H2)', 
@@ -318,14 +333,24 @@ binnings = {
 
         }
 
-cuts = {#'resolved' : ROOT.TCut('nbtags == 6 && nfatjets == 0 && nbtags > 4',
-        #'boosted'  : 'nfatjets == 3 && nbtags > 4',
-        'nFJ0'  : 'nfatjets == 0',
-        'nFJ1'  : 'nfatjets == 1',
-        'nFJ2'  : 'nfatjets == 2',
-        'nFJ3'  : 'nfatjets == 3',
-        'inclusive' : '1'
+#cuts = {#'resolved' : ROOT.TCut('nbtags == 6 && nfatjets == 0 && nbtags > 4',
+#        #'boosted'  : 'nfatjets == 3 && nbtags > 4',
+#        'nFJ0'  : 'nfatjets == 0',
+#        'nFJ1'  : 'nfatjets == 1',
+#        'nFJ2'  : 'nfatjets == 2',
+#        'nFJ3'  : 'nfatjets == 3',
+#        'inclusive' : '1'
+#        }
+
+cuts = {
+        'nFJ0'  : 'nprobejets == 0',
+        'nFJ1'  : 'nprobejets == 1',
+        'nFJ2'  : 'nprobejets == 2',
+        'nFJ3'  : 'nprobejets == 3',
+        'inclusive' : '1',
+        'nFJ1p' : 'nprobejets > 0',
         }
+
 
 
 # cut loose = 0.0532 = 91%, medium = 0.3040 = 79%, tight = 0.7476 = 61%
