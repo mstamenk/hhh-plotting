@@ -27,7 +27,7 @@ hist_properties = {'JetHT' : [ROOT.kBlack, 0.8, 0, 'Data', True] , # [color, mar
                    'WZZ' : [ROOT.kRed, 0, 2, 'VVV', False], 
                    'WWZ' : [ROOT.kRed, 0, 2, 'VVV', False], 
                    'TT' : [ROOT.kBlue, 0,2, 't#bar{t}', True],
-                   'GluGluToHHHTo6B_SM' : [ROOT.kRed, 0,2, 'SM HHH x 100', True],
+                   'GluGluToHHHTo6B_SM' : [ROOT.kRed, 0,2, 'SM HHH x 10000', True],
         } 
 
 
@@ -39,19 +39,20 @@ c = ROOT.TCanvas()
 p1 = ROOT.TPad("c_1","",0,0,1,0.3)
 p2 = ROOT.TPad("c_2","", 0,0.3,1,1)
 
-testname = 'v17-6jets-BDT'
+testname = 'HLT-selection'
+year = '2017'
 
-for region in ['inclusive']:
+for region in ['inclusive','nFJ0','nFJ1','nFJ2','nFJ3','nFJ1p']:
     for wp in ['loose']:
         for tag in ['0ptag']:
             
-            version = 'v17-6jets-BDT'
-            eos_plots = 'plots_data-mc-%s-%s-%s-%s-wp-%s'%(testname,version,region,wp,tag)
+            version = 'v21'
+            eos_plots = 'plots_data-mc-%s-%s-%s-%s-wp-%s-%s'%(testname,version,region,wp,tag,year)
 
             if not os.path.isdir(eos_plots):
                 os.mkdir(eos_plots)
 
-            histo_path = 'histo-root-%s-%s-%s-%s-wp-%s'%(testname,version,region,wp,tag)
+            histo_path = '/isilon/data/users/mstamenk/eos-triple-h/%s/histograms-%s-%s-%s-%s-wp-%s-%s'%(version,testname,version,region,wp,tag,year)
 
             # ['JetHT','WWTo4Q','WWZ','ZJetsToQQ','ZZZ','QCD','WJetsToQQ','WWW','WZZ','ZZTo4Q', 'TT']:
 
@@ -79,8 +80,7 @@ for region in ['inclusive']:
                 file_signal = ROOT.TFile(histo_path + '/' + 'histograms_%s.root'%('GluGluToHHHTo6B_SM'))
 
                 files_bkg = {}
-                #for bkg in ['QCD','WWTo4Q','WWZ','ZJetsToQQ','ZZZ','WJetsToQQ','WWW','WZZ','ZZTo4Q', 'TT']:
-                for bkg in ['QCD6B','ZJetsToQQ','WJetsToQQ', 'TT']:
+                for bkg in ['QCD','WWTo4Q','WWZ','ZJetsToQQ','ZZZ','WJetsToQQ','WWW','WZZ','ZZTo4Q', 'TT']:
                 #for bkg in ['QCD6B']:
                     f_tmp = ROOT.TFile(histo_path + '/' + 'histograms_%s.root'%bkg)
                     if f_tmp.IsOpen():
@@ -117,7 +117,7 @@ for region in ['inclusive']:
                 h_signal.SetLineColor(hist_properties['GluGluToHHHTo6B_SM'][0])
                 h_signal.SetMarkerSize(hist_properties['GluGluToHHHTo6B_SM'][1])
                 h_signal.SetLineWidth(hist_properties['GluGluToHHHTo6B_SM'][2])
-                h_signal.Scale(100.)
+                h_signal.Scale(10000.)
                 legend.AddEntry(h_signal, hist_properties['GluGluToHHHTo6B_SM'][3], 'l')
 
                 h_stack = ROOT.THStack()
@@ -179,7 +179,7 @@ for region in ['inclusive']:
                 p2.SetRightMargin(0.05)
 
                 h_data.SetMinimum(0.0001)
-                h_data.SetMaximum(1000000*h_data.GetMaximum())
+                h_data.SetMaximum(1.5*h_data.GetMaximum())
 
                 p2.cd()
 
@@ -198,11 +198,6 @@ for region in ['inclusive']:
                 c.RedrawAxis()
 
                 c.Print(eos_plots + '/' + var +  '.pdf')
-
-
-
-                p2.SetLogy()
-                c.Print(eos_plots + '/' + var +  '_log.pdf')
 
                 file_data.Close()
                 file_signal.Close()
