@@ -2,6 +2,7 @@
 
 
 import random
+import ROOT
 
 q = random.uniform(0,1)
 
@@ -421,3 +422,76 @@ float getTriggerSF(int HLT_PFJet450, int HLT_PFJet500, int HLT_PFHT1050, int HLT
 hlt_method_2017 = ' getTriggerSF( HLT_PFJet450,  HLT_PFJet500,  HLT_PFHT1050,  HLT_AK8PFJet550,  HLT_PFHT300PT30_QuadPFJet_75_60_45_40_TriplePFBTagCSV_3p0,  HLT_AK8PFJet360_TrimMass30,  HLT_AK8PFHT750_TrimMass50,  HLT_AK8PFJet400_TrimMass30,  HLT_PFMET100_PFMHT100_IDTight_CaloBTagCSV_3p1,  HLT_PFHT380_SixPFJet32_DoublePFBTagDeepCSV_2p2,  HLT_AK8PFJet330_PFAK8BTagCSV_p17,  HLT_QuadPFJet98_83_71_15_BTagCSV_p013_VBF2,  HLT_PFHT380_SixPFJet32_DoublePFBTagCSV_2p2,  HLT_PFHT430_SixPFJet40_PFBTagCSV_1p5,  HLT_QuadPFJet98_83_71_15_DoubleBTagCSV_p013_p08_VBF1 );'
 
 triggersCorrections = {'2017' : [hlt_sf_2017,hlt_method_2017]}
+
+
+
+
+def add_bdt(df, xmlpath):
+
+    ROOT.gInterpreter.Declare('''
+    float computeBDTScore(float& h_fit_mass,float& h1_t3_mass,float& h2_t3_mass,float& h3_t3_mass,float& h1_t3_dRjets,float& h2_t3_dRjets,float& h3_t3_dRjets,float& bcand1Pt,float& bcand2Pt,float& bcand3Pt,float& bcand4Pt,float& bcand5Pt,float& bcand6Pt,float& bcand1Eta,float& bcand2Eta,float& bcand3Eta,float& bcand4Eta,float& bcand5Eta,float& bcand6Eta,float& bcand1DeepFlavB,float& bcand2DeepFlavB,float& bcand3DeepFlavB,float& bcand4DeepFlavB,float& bcand5DeepFlavB,float& bcand6DeepFlavB, float& fatJet1Mass, float& fatJet1Pt, float& fatJet1Eta, float& fatJet1PNetXbb, float& fatJet2Mass, float& fatJet2Pt, float& fatJet2Eta, float& fatJet2PNetXbb, float& fatJet3Mass, float& fatJet3Pt, float& fatJet3Eta, float& fatJet3PNetXbb){
+
+    TMVA::Reader *reader = new TMVA::Reader( "!V:Color:Silent" );   
+    reader->AddVariable("h_fit_mass",&h_fit_mass);
+    reader->AddVariable("h1_t3_mass",&h1_t3_mass);
+    reader->AddVariable("h2_t3_mass",&h2_t3_mass);
+    reader->AddVariable("h3_t3_mass",&h3_t3_mass);
+    reader->AddVariable("h1_t3_dRjets",&h1_t3_dRjets);
+    reader->AddVariable("h2_t3_dRjets",&h2_t3_dRjets);
+    reader->AddVariable("h3_t3_dRjets",&h3_t3_dRjets);
+    reader->AddVariable("bcand1Pt",&bcand1Pt);
+    reader->AddVariable("bcand2Pt",&bcand2Pt);
+    reader->AddVariable("bcand3Pt",&bcand3Pt);
+    reader->AddVariable("bcand4Pt",&bcand4Pt);
+    reader->AddVariable("bcand5Pt",&bcand5Pt);
+    reader->AddVariable("bcand6Pt",&bcand6Pt);
+    reader->AddVariable("bcand1Eta",&bcand1Eta);
+    reader->AddVariable("bcand2Eta",&bcand2Eta);
+    reader->AddVariable("bcand3Eta",&bcand3Eta);
+    reader->AddVariable("bcand4Eta",&bcand4Eta);
+    reader->AddVariable("bcand5Eta",&bcand5Eta); 
+    reader->AddVariable("bcand6Eta",&bcand6Eta);
+    reader->AddVariable("bcand1DeepFlavB",&bcand1DeepFlavB);
+    reader->AddVariable("bcand2DeepFlavB",&bcand2DeepFlavB);
+    reader->AddVariable("bcand3DeepFlavB",&bcand3DeepFlavB);
+    reader->AddVariable("bcand4DeepFlavB",&bcand4DeepFlavB);
+    reader->AddVariable("bcand5DeepFlavB",&bcand5DeepFlavB);
+    reader->AddVariable("bcand6DeepFlavB",&bcand6DeepFlavB);
+
+    reader->AddVariable("fatJet1Mass",&fatJet1Mass);
+    reader->AddVariable("fatJet1Pt",&fatJet1Pt);
+    reader->AddVariable("fatJet1Eta",&fatJet1Eta);
+    reader->AddVariable("fatJet1PNetXbb",&fatJet1PNetXbb);
+
+    reader->AddVariable("fatJet2Mass",&fatJet2Mass);
+    reader->AddVariable("fatJet2Pt",&fatJet2Pt);
+    reader->AddVariable("fatJet2Eta",&fatJet2Eta);
+    reader->AddVariable("fatJet2PNetXbb",&fatJet2PNetXbb);
+
+    reader->AddVariable("fatJet3Mass",&fatJet3Mass);
+    reader->AddVariable("fatJet3Pt",&fatJet3Pt);
+    reader->AddVariable("fatJet3Eta",&fatJet3Eta);
+    reader->AddVariable("fatJet3PNetXbb",&fatJet3PNetXbb);
+
+    reader->BookMVA("BDT","/isilon/data/users/mstamenk/hhh-6b-producer/CMSSW_11_1_0_pre5_PY3/src/hhh-plotting/data/TMVAClassification_BDT_inclusive_2017.weights.xml");
+
+    return reader->EvaluateMVA("BDT");
+    
+    }
+    ''')
+                                                             
+    df = df.Define('BDT', "computeBDTScore( h_fit_mass, h1_t3_mass, h2_t3_mass, h3_t3_mass, h1_t3_dRjets, h2_t3_dRjets, h3_t3_dRjets, bcand1Pt, bcand2Pt, bcand3Pt, bcand4Pt,bcand5Pt, bcand6Pt, bcand1Eta, bcand2Eta, bcand3Eta, bcand4Eta, bcand5Eta, bcand6Eta, bcand1DeepFlavB, bcand2DeepFlavB, bcand3DeepFlavB, bcand4DeepFlavB, bcand5DeepFlavB, bcand6DeepFlavB,fatJet1Mass,fatJet1Pt,fatJet1Eta,fatJet1PNetXbb,fatJet2Mass,fatJet2Pt,fatJet2Eta,fatJet2PNetXbb,fatJet3Mass,fatJet3Pt,fatJet3Eta,fatJet3PNetXbb)")
+    return df
+
+
+
+
+
+
+
+
+
+
+
+
+

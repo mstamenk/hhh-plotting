@@ -1,7 +1,7 @@
 # Script to make histograms using rdataframe
 
 import os, ROOT
-from utils import labels, binnings, cuts, wps, tags, luminosities, hlt_paths
+from utils import labels, binnings, cuts, wps, tags, luminosities, hlt_paths, triggersCorrections, add_bdt
 from array import array
 
 
@@ -14,10 +14,12 @@ parser.add_argument('--region', default = 'inclusive') # region: nFJ0, nFJ1, nFJ
 parser.add_argument('--tag', default = '0ptag') # n b-tags on AK4 jets using DeepJet
 parser.add_argument('--wp', default = 'loose') # b-tagging working point: loose, medium, tight
 parser.add_argument('--f_in', default = 'GluGluToHHHTo6B_SM') # input samples
-parser.add_argument('--inputs_path', default = '/afs/cern.ch/work/m/mstamenk/public/forPKU/') # path of inputs after NanoNN
-parser.add_argument('--outputs_path', help='Please specify output path for histograms / mva inputs location to be stored') # output path for histograms and mva inputs
+#parser.add_argument('--inputs_path', default = '/afs/cern.ch/work/m/mstamenk/public/forPKU/') # path of inputs after NanoNN
+parser.add_argument('--inputs_path', default = '/isilon/data/users/mstamenk/eos-triple-h/') # path of inputs after NanoNN
+parser.add_argument('--outputs_path', help='Please specify output path for histograms / mva inputs location to be stored', default = '/isilon/data/users/mstamenk/eos-triple-h/') # output path for histograms and mva inputs
 parser.add_argument('--doMVAInputs', action = 'store_true') # store MVA inputs
 parser.add_argument('--doHistograms', action = 'store_true') # store histograms
+parser.add_argument('--addBDT', action = 'store_true') # store histograms
 
 args = parser.parse_args()
 
@@ -33,7 +35,7 @@ ROOT.ROOT.EnableImplicitMT()
 
 # get inputs 
 version = args.version
-path = args.inputs_path + '/' + '%s-%s'%(version,args.year) + '/'
+path = args.inputs_path + '/' + 'samples-%s-%s-nanoaod'%(version,args.year) + '/'
 f_in = args.f_in
 
 # data frame with all the events 
@@ -58,6 +60,8 @@ if args.doHistograms:
 
 if args.doMVAInputs:
     mva_training_samples = args.outputs_path + '/' + args.version + '/' + 'mva-inputs-%s-%s-%s-%s-wp-%s-%s'%(typename,version,region,wp,tag,args.year)
+    print("Running doMVAInputs: preparing folder")
+    print("Writing in %s"%mva_training_samples)
     if not os.path.isdir(mva_training_samples):
         os.makedirs(mva_training_samples)
 
@@ -72,8 +76,11 @@ cutRegion = cuts[region]
 
 if 'JetHT' in f_in:
     cutWeight = '1'
-else:
-    cutWeight = '(%f * weight * xsecWeight * l1PreFiringWeight * puWeight * genWeight)'%(lumi)
+else: 
+    ROOT.gInterpreter.Declare(triggersCorrections[args.year][0])
+    df = df.Define('triggerSF', triggersCorrections[args.year][1] )
+    cutWeight = '(%f * weight * xsecWeight * l1PreFiringWeight * puWeight * genWeight * triggerSF)'%(lumi)
+
 
 # HLT selection
 cutHLT = hlt_paths[args.year]
@@ -92,8 +99,14 @@ df_tags = df_region.Filter(cutTag, "Pass b-tagging")
 df = df_tags.Filter(cutSignalJets,"Pass leading jet pT > 40")
 
 # Define new variables
+
 df = df.Define('hhh_t3_pt','h1_t3_pt + h2_t3_pt + h3_t3_pt')
 df = df.Define('eventWeight',cutWeight)
+
+if args.addBDT:
+    add_bdt(df,'')
+
+
 
 # Print report on event selection
 report = df.Report()
